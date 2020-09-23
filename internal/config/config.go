@@ -1,7 +1,9 @@
 package config
 
 import (
-	"github.com/m1keru/pushbot/internal/alertmanager"
+	"github.com/m1keru/pushbot/internal/databases"
+	"github.com/m1keru/pushbot/internal/endpoints"
+	"github.com/m1keru/pushbot/internal/logging"
 	log "github.com/sirupsen/logrus"
 	"os"
 
@@ -10,25 +12,15 @@ import (
 
 // Config -- Global Config
 type Config struct {
-	Daemon       Daemon                    `yaml:"daemon"`
-	Alertmanager alertmanager.Alertmanager `yaml:"alertmanager"`
-	Databases    []Database                `yaml:"databases"`
-}
-
-// Database -- databases
-type Database struct {
-	Type        string `yaml:"type"`
-	Host        string `yaml:"host"`
-	Port        int    `yaml:"port"`
-	FailTimeout int    `yaml:"fail_timeout"`
-	Schema      string `yaml:"schema,omitempty"`
+	Daemon       Daemon                 `yaml:"daemon"`
+	Logger       logging.Logger         `yaml:"logger"`
+	Alertmanager endpoints.Alertmanager `yaml:"alertmanager"`
+	Rabbitmq     databases.RabbitMQ     `yaml:"rabbitmq"`
 }
 
 //Daemon - DaemonConfig
 type Daemon struct {
-	LogFile string `yaml:"LogFile"`
-	Debug   bool   `yaml:"Debug"`
-	Port    int    `yaml:"port"`
+	Port int `yaml:"port"`
 }
 
 //Setup - Setup
@@ -43,5 +35,6 @@ func (cfg *Config) Setup(filename *string) error {
 	if err != nil {
 		log.Fatalf("Unable to Unmarshal Config, Error:\n %v\n", err)
 	}
+	log.Printf("Config: %+v", cfg)
 	return nil
 }

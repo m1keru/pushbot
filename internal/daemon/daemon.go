@@ -1,10 +1,9 @@
 package daemon
 
 import (
-	//"github.com/m1keru/pushbot/internal/alertmanager"
 	"fmt"
 	"github.com/m1keru/pushbot/internal/config"
-	log "github.com/sirupsen/logrus"
+	"github.com/m1keru/pushbot/internal/logging"
 	"net/http"
 	"sync"
 )
@@ -12,7 +11,8 @@ import (
 //SpinUp -- SpinUp
 func SpinUp(cfg *config.Config, wg *sync.WaitGroup) error {
 	alertmanager := &cfg.Alertmanager
+	alertmanager.Dblink = &cfg.Rabbitmq
 	http.Handle(cfg.Alertmanager.URI, alertmanager)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Alertmanager.Host, cfg.Daemon.Port), nil))
+	logging.CheckError("Daemon failed", http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Alertmanager.Host, cfg.Daemon.Port), nil))
 	return nil
 }

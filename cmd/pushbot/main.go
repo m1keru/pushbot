@@ -4,8 +4,8 @@ import (
 	"flag"
 	"github.com/m1keru/pushbot/internal/config"
 	"github.com/m1keru/pushbot/internal/daemon"
+	"github.com/m1keru/pushbot/internal/logging"
 	log "github.com/sirupsen/logrus"
-	"os"
 	"sync"
 )
 
@@ -17,18 +17,7 @@ func main() {
 		log.Fatalf("%+v", err)
 	}
 
-	if cfg.Daemon.LogFile != "" {
-		logfile, err := os.Open(cfg.Daemon.LogFile)
-		if err != nil {
-			log.Fatalf("Unable to read config: %+v", err)
-		}
-		log.SetOutput(logfile)
-	}
-	if cfg.Daemon.Debug == true {
-		log.SetLevel(log.DebugLevel)
-	}
-	log.SetLevel(log.InfoLevel)
-	log.Printf("%+v", cfg)
+	logging.SetupLogging(&cfg.Logger)
 	var wg sync.WaitGroup
 	//wg.Add(1)
 	daemon.SpinUp(&cfg, &wg)

@@ -30,7 +30,7 @@ default: all
 # non-phony targets
 $(TARGET): $(OBJ)
 	cd cmd/$(TARGET_NAME) && \
-	$(CC) build -o ../../dist/$(TARGET_NAME) && \
+	CGO_ENABLED=0 GOOS=linux $(CC) build -a -installsuffix cgo  -o ../../dist/$(TARGET_NAME) && \
 	cd - && \
 	cp config/config.yaml.tpl dist/ 
 	
